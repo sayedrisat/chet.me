@@ -3,107 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Clone</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            height: 80vh;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .chat-box {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .message {
-            max-width: 80%;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-        }
-        .user-message {
-            align-self: flex-end;
-            background-color: #007bff;
-            color: white;
-        }
-        .bot-message {
-            align-self: flex-start;
-            background-color: #e5e5e5;
-        }
-        .input-container {
-            display: flex;
-            padding: 10px;
-            background: #fff;
-            border-top: 1px solid #ddd;
-        }
-        .input-box {
-            flex-grow: 1;
-            padding: 10px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-        }
-        .send-btn {
-            padding: 10px 15px;
-            border: none;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .send-btn:hover {
-            background: #0056b3;
-        }
-    </style>
+    <title>ChatBot AI</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="chat-container">
+        <div class="chat-header">ChatBot AI</div>
         <div class="chat-box" id="chatBox"></div>
-        <div class="input-container">
-            <input type="text" id="userInput" class="input-box" placeholder="Type a message...">
-            <button class="send-btn" onclick="sendMessage()">Send</button>
+        <div class="chat-input-box">
+            <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
-    <script>
-        function sendMessage() {
-            let userInput = document.getElementById("userInput");
-            let chatBox = document.getElementById("chatBox");
-            
-            if (userInput.value.trim() === "") return;
-            
-            let userMessage = document.createElement("div");
-            userMessage.className = "message user-message";
-            userMessage.textContent = userInput.value;
-            chatBox.appendChild(userMessage);
-            
-            setTimeout(() => {
-                let botMessage = document.createElement("div");
-                botMessage.className = "message bot-message";
-                botMessage.textContent = "This is a test response.";
-                chatBox.appendChild(botMessage);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
-            
-            userInput.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
