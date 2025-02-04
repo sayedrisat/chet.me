@@ -3,30 +3,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    loadChatHistory();
+    loadChatHistory(); // Load previous chat messages
 
     function sendMessage() {
         let userText = userInput.value.trim();
         if (userText === "") return;
 
-        // Ensure message length is within the limit
-        if (userText.length > 250) {
-            appendMessage("Bot", "⚠️ Your message is too long! Please keep it under 250 characters.", false);
-            return;
-        }
+        // Debugging log (check what is being sent)
+        console.log("User message:", userText, "Length:", userText.length);
 
+        // Append user message to chatbox
         appendMessage("You", userText, true);
         saveMessage("You", userText);
         userInput.value = "";
         userInput.focus();
 
-        // **Fetch Request with Debugging**
+        // 🔹 **Ensure JSON payload is properly formatted**
+        let payload = JSON.stringify({
+            message: encodeURIComponent(userText) // Encode special characters
+        });
+
         fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ message: userText })
+            body: payload
         })
         .then(response => {
             if (!response.ok) throw new Error("Failed to get response from AI.");
@@ -34,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(data => {
             console.log("Webhook Response:", data); // Debugging log
-            let botReply = data && data.reply ? data.reply : "Error: No response from AI.";
+            let botReply = data && data.reply ? decodeURIComponent(data.reply) : "Error: No response from AI.";
             appendMessage("Bot", botReply, false);
             saveMessage("Bot", botReply);
         })
