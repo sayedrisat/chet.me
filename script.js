@@ -3,14 +3,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
+    // 🔹 Load Previous Chat History on Page Load
+    loadChatHistory();
+
     function sendMessage() {
         let userText = userInput.value.trim();
         if (userText === "") return;
 
-        // Append user message to chatbox
+        // Append user message to chatbox and save it
         appendMessage("You", userText, true);
+        saveMessage("You", userText);
         userInput.value = "";
-        userInput.focus(); // Keeps input field active
+        userInput.focus();
 
         fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
@@ -24,16 +28,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(data => {
-            console.log("Webhook Response:", data); // Debugging log
-            if (data && data.reply) {
-                appendMessage("Bot", data.reply, false);
-            } else {
-                appendMessage("Bot", "Error: No valid response from AI.", false);
-            }
+            console.log("Webhook Response:", data);
+            let botReply = data && data.reply ? data.reply : "Error: No response from AI.";
+            appendMessage("Bot", botReply, false);
+            saveMessage("Bot", botReply); // Save bot response
         })
         .catch(error => {
             console.error("Error:", error);
-            appendMessage("Bot", "Error connecting to AI.", false);
+            let errorMessage = "Error connecting to AI.";
+            appendMessage("Bot", errorMessage, false);
+            saveMessage("Bot", errorMessage);
         });
     }
 
@@ -54,9 +58,22 @@ document.addEventListener("DOMContentLoaded", function () {
         chatbox.scrollTop = chatbox.scrollHeight;
     }
 
+    // 🔹 Save Messages to LocalStorage
+    function saveMessage(sender, text) {
+        let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        messages.push({ sender, text });
+        localStorage.setItem("chatHistory", JSON.stringify(messages));
+    }
+
+    // 🔹 Load Previous Chat Messages from LocalStorage
+    function loadChatHistory() {
+        let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        messages.forEach(msg => appendMessage(msg.sender, msg.text, msg.sender === "You"));
+    }
+
     // **Fix for Send Button Click Not Working on Mobile**
     sendButton.addEventListener("click", function (event) {
-        event.preventDefault(); // Prevents form submission issues
+        event.preventDefault();
         sendMessage();
     });
 
