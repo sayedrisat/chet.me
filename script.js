@@ -68,7 +68,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🔹 Load Previous Chat Messages from LocalStorage
     function loadChatHistory() {
         let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        chatbox.innerHTML = ""; // Clear chatbox before loading history
         messages.forEach(msg => appendMessage(msg.sender, msg.text, msg.sender === "You"));
+    }
+
+    // 🔹 Clear Chat History (Optional Feature)
+    function clearChatHistory() {
+        localStorage.removeItem("chatHistory");
+        chatbox.innerHTML = ""; // Clear chatbox UI
     }
 
     // **Fix for Send Button Click Not Working on Mobile**
