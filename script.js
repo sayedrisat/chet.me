@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Append user message to chatbox
         appendMessage("You", userText, true);
         userInput.value = "";
-        userInput.focus(); // Ensure input field remains active after sending
+        userInput.focus(); // Keeps input field active
 
         fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
@@ -20,16 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify({ message: userText })
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to get response from AI.");
-            }
+            if (!response.ok) throw new Error("Failed to get response from AI.");
             return response.json();
         })
         .then(data => {
-            if (data.reply) {
+            console.log("Webhook Response:", data); // Debugging log
+            if (data && data.reply) {
                 appendMessage("Bot", data.reply, false);
             } else {
-                appendMessage("Bot", "Error: No response from AI.", false);
+                appendMessage("Bot", "Error: No valid response from AI.", false);
             }
         })
         .catch(error => {
@@ -55,13 +54,13 @@ document.addEventListener("DOMContentLoaded", function () {
         chatbox.scrollTop = chatbox.scrollHeight;
     }
 
-    // **Fix: Click event for mobile & desktop**
+    // **Fix for Send Button Click Not Working on Mobile**
     sendButton.addEventListener("click", function (event) {
-        event.preventDefault(); // Prevents page reload or default form action
+        event.preventDefault(); // Prevents form submission issues
         sendMessage();
     });
 
-    // **Fix: Ensure "Enter" key submits message on mobile & desktop**
+    // **Fix for Enter Key Not Sending Messages**
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter" || event.keyCode === 13) {
             event.preventDefault();
@@ -69,4 +68,3 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
