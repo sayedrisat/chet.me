@@ -1,33 +1,40 @@
-function sendMessage() {
-    let userInput = document.getElementById("userInput").value.trim();
-    if (userInput === "") return;
+document.addEventListener("DOMContentLoaded", function () {
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
 
-    let chatBox = document.getElementById("chatBox");
+    sendButton.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
 
-    // Display User Message
-    let userMessageDiv = document.createElement("div");
-    userMessageDiv.classList.add("message", "user-message");
-    userMessageDiv.innerHTML = `<strong>You:</strong> ${userInput}`;
-    chatBox.appendChild(userMessageDiv);
+    async function sendMessage() {
+        let userText = userInput.value.trim();
+        if (userText === "") return;
 
-    // Clear input field
-    document.getElementById("userInput").value = "";
+        // Display user message in chat
+        chatbox.innerHTML += `<div class="user-message"><strong>You:</strong> ${userText}</div>`;
+        userInput.value = "";
+        chatbox.scrollTop = chatbox.scrollHeight;
 
-    // Simulate bot response
-    setTimeout(() => {
-        let botMessageDiv = document.createElement("div");
-        botMessageDiv.classList.add("message", "bot-message");
-        botMessageDiv.innerHTML = `<strong>Bot:</strong> This is a test response.`;
-        chatBox.appendChild(botMessageDiv);
+        try {
+            let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userText })
+            });
 
-        // Auto-scroll to latest message
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1000);
-}
+            let data = await response.json();
+            
+            // Display AI response in chat
+            chatbox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> ${data.reply || "Error: No response"}</div>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
 
-// Allow pressing "Enter" to send a message
-function handleKeyPress(event) {
-    if (event.key === "Enter") {
-        sendMessage();
+        } catch (error) {
+            chatbox.innerHTML += `<div class="bot-message error"><strong>Bot:</strong> Sorry, something went wrong.</div>`;
+            console.error("Error:", error);
+        }
     }
-}
+});
