@@ -4,14 +4,30 @@ function sendMessage() {
 
     let chatBox = document.getElementById("chatBox");
 
-    let userMessage = `<div class="message user-message"><b>You:</b> ${userInput}</div>`;
-    chatBox.innerHTML += userMessage;
-    
+    // Display User Message
+    let userMessageDiv = document.createElement("div");
+    userMessageDiv.classList.add("message", "user-message");
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${userInput}`;
+    chatBox.appendChild(userMessageDiv);
+
+    // Clear input field
     document.getElementById("userInput").value = "";
 
+    // Simulate bot response
     setTimeout(() => {
-        let botResponse = `<div class="message bot-message"><b>Bot:</b> This is a test response.</div>`;
-        chatBox.innerHTML += botResponse;
+        let botMessageDiv = document.createElement("div");
+        botMessageDiv.classList.add("message", "bot-message");
+        botMessageDiv.innerHTML = `<strong>Bot:</strong> This is a test response.`;
+        chatBox.appendChild(botMessageDiv);
+
+        // Auto-scroll to latest message
         chatBox.scrollTop = chatBox.scrollHeight;
     }, 1000);
+}
+
+// Allow pressing "Enter" to send a message
+function handleKeyPress(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
 }
