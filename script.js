@@ -1,40 +1,21 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const chatbox = document.getElementById("chatbox");
-    const userInput = document.getElementById("userInput");
-    const sendButton = document.getElementById("sendButton");
+async function sendMessage() {
+    let userText = document.getElementById("userInput").value;
+    if (userText.trim() === "") return;
 
-    sendButton.addEventListener("click", sendMessage);
-    userInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    });
+    let chatbox = document.getElementById("chatbox");
+    chatbox.innerHTML += `<div class='message user'><strong>You:</strong> ${userText}</div>`;
+    document.getElementById("userInput").value = "";
 
-    async function sendMessage() {
-        let userText = userInput.value.trim();
-        if (userText === "") return;
-
-        // Display user message in chat
-        chatbox.innerHTML += `<div class="user-message"><strong>You:</strong> ${userText}</div>`;
-        userInput.value = "";
-        chatbox.scrollTop = chatbox.scrollHeight;
-
-        try {
-            let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userText })
-            });
-
-            let data = await response.json();
-            
-            // Display AI response in chat
-            chatbox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> ${data.reply || "Error: No response"}</div>`;
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-        } catch (error) {
-            chatbox.innerHTML += `<div class="bot-message error"><strong>Bot:</strong> Sorry, something went wrong.</div>`;
-            console.error("Error:", error);
-        }
+    try {
+        let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userText })
+        });
+        let data = await response.json();
+        chatbox.innerHTML += `<div class='message bot'><strong>Bot:</strong> ${data.reply || "Error: No response"}</div>`;
+    } catch (error) {
+        chatbox.innerHTML += `<div class='message bot error'><strong>Bot:</strong> Failed to fetch response.</div>`;
     }
-});
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
