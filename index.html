@@ -1,66 +1,25 @@
-/* Updated styles.css */
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
-}
-
-#chat-container {
-    width: 400px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-#chat-header {
-    display: flex;
-    align-items: center;
-    background: #222;
-    color: white;
-    padding: 15px;
-    font-size: 18px;
-}
-
-#chat-logo {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-}
-
-#chatbox {
-    flex-grow: 1;
-    padding: 10px;
-    overflow-y: auto;
-    max-height: 400px;
-}
-
-#input-container {
-    display: flex;
-    padding: 10px;
-    background: #fff;
-}
-
-#userInput {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    outline: none;
-}
-
-button {
-    margin-left: 10px;
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat.Me AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="logo.png" alt="Chat.Me Logo" class="logo">
+            <h1>Chat.Me AI</h1>
+        </div>
+        <div class="chat-box" id="chatBox">
+            <div class="bot-message"><strong>Bot:</strong> Hello! How can I assist you today?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
