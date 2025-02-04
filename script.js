@@ -3,19 +3,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    // 🔹 Load Previous Chat History on Page Load
     loadChatHistory();
 
     function sendMessage() {
         let userText = userInput.value.trim();
         if (userText === "") return;
 
-        // Append user message to chatbox and save it
+        // Ensure message length is within the limit
+        if (userText.length > 250) {
+            appendMessage("Bot", "⚠️ Your message is too long! Please keep it under 250 characters.", false);
+            return;
+        }
+
         appendMessage("You", userText, true);
         saveMessage("You", userText);
         userInput.value = "";
         userInput.focus();
 
+        // **Fetch Request with Debugging**
         fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
             headers: {
@@ -28,16 +33,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(data => {
-            console.log("Webhook Response:", data);
+            console.log("Webhook Response:", data); // Debugging log
             let botReply = data && data.reply ? data.reply : "Error: No response from AI.";
             appendMessage("Bot", botReply, false);
-            saveMessage("Bot", botReply); // Save bot response
+            saveMessage("Bot", botReply);
         })
         .catch(error => {
             console.error("Error:", error);
-            let errorMessage = "Error connecting to AI.";
-            appendMessage("Bot", errorMessage, false);
-            saveMessage("Bot", errorMessage);
+            appendMessage("Bot", "Error connecting to AI. Try again.", false);
         });
     }
 
@@ -58,33 +61,23 @@ document.addEventListener("DOMContentLoaded", function () {
         chatbox.scrollTop = chatbox.scrollHeight;
     }
 
-    // 🔹 Save Messages to LocalStorage
     function saveMessage(sender, text) {
         let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
         messages.push({ sender, text });
         localStorage.setItem("chatHistory", JSON.stringify(messages));
     }
 
-    // 🔹 Load Previous Chat Messages from LocalStorage
     function loadChatHistory() {
         let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
-        chatbox.innerHTML = ""; // Clear chatbox before loading history
+        chatbox.innerHTML = "";
         messages.forEach(msg => appendMessage(msg.sender, msg.text, msg.sender === "You"));
     }
 
-    // 🔹 Clear Chat History (Optional Feature)
-    function clearChatHistory() {
-        localStorage.removeItem("chatHistory");
-        chatbox.innerHTML = ""; // Clear chatbox UI
-    }
-
-    // **Fix for Send Button Click Not Working on Mobile**
     sendButton.addEventListener("click", function (event) {
         event.preventDefault();
         sendMessage();
     });
 
-    // **Fix for Enter Key Not Sending Messages**
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter" || event.keyCode === 13) {
             event.preventDefault();
