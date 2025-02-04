@@ -3,52 +3,39 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    // Ensure click event works across all devices
-    sendButton.addEventListener("click", function (event) {
-        event.preventDefault(); // Prevents any default form submission
-        sendMessage();
-    });
-
-    // Handle Enter keypress for desktop and mobile keyboards
-    userInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter" || event.keyCode === 13) {
-            event.preventDefault(); // Prevents newline in input field
-            sendMessage();
-        }
-    });
-
-    async function sendMessage() {
+    function sendMessage() {
         let userText = userInput.value.trim();
         if (userText === "") return;
 
         // Append user message to chatbox
         appendMessage("You", userText, true);
         userInput.value = "";
+        userInput.focus(); // Ensure input field remains active after sending
 
-        try {
-            let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ message: userText })
-            });
-
+        fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userText })
+        })
+        .then(response => {
             if (!response.ok) {
                 throw new Error("Failed to get response from AI.");
             }
-
-            let data = await response.json();
-
+            return response.json();
+        })
+        .then(data => {
             if (data.reply) {
                 appendMessage("Bot", data.reply, false);
             } else {
                 appendMessage("Bot", "Error: No response from AI.", false);
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error("Error:", error);
             appendMessage("Bot", "Error connecting to AI.", false);
-        }
+        });
     }
 
     function appendMessage(sender, text, isUser) {
@@ -67,4 +54,19 @@ document.addEventListener("DOMContentLoaded", function () {
         chatbox.appendChild(messageElement);
         chatbox.scrollTop = chatbox.scrollHeight;
     }
+
+    // **Fix: Click event for mobile & desktop**
+    sendButton.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevents page reload or default form action
+        sendMessage();
+    });
+
+    // **Fix: Ensure "Enter" key submits message on mobile & desktop**
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter" || event.keyCode === 13) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
 });
+
