@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -8,78 +9,97 @@ body {
     margin: 0;
 }
 
+/* Chat Container */
 .chat-container {
-    width: 90%;
-    max-width: 400px;
-    background: white;
+    width: 360px;
+    max-width: 90%;
+    background-color: white;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Chat Header */
 .chat-header {
-    background: #1e1e1e;
+    background-color: #222;
     color: white;
-    padding: 10px;
+    font-size: 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 12px;
 }
 
-.logo {
+.chat-header .logo {
     width: 30px;
     height: 30px;
+    margin-right: 10px;
 }
 
-.chat-box {
-    padding: 15px;
+/* Chat Box */
+.chatbox {
     height: 400px;
     overflow-y: auto;
-    background: #ffffff;
+    padding: 10px;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
-.bot-message {
-    background: #e0e0e0;
+/* User & Bot Messages */
+.message {
     padding: 10px;
     border-radius: 8px;
-    margin: 5px 0;
     max-width: 80%;
-    align-self: flex-start;
 }
 
 .user-message {
-    background: #007bff;
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    margin: 5px 0;
-    max-width: 80%;
     align-self: flex-end;
+    background-color: #007bff;
+    color: white;
 }
 
+.bot-message {
+    align-self: flex-start;
+    background-color: #ddd;
+}
+
+/* Chat Input */
 .chat-input {
     display: flex;
     padding: 10px;
     border-top: 1px solid #ddd;
+    background: #fff;
 }
 
 .chat-input input {
     flex: 1;
     padding: 10px;
-    border: none;
+    border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 16px;
 }
 
-.chat-input button {
-    background: #007bff;
-    color: white;
-    border: none;
+/* Send Button */
+#sendButton {
     padding: 10px 15px;
+    margin-left: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
     border-radius: 5px;
-    margin-left: 5px;
     cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Hover Effect on Send Button */
+#sendButton:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 400px) {
+    .chat-container {
+        width: 95%;
+    }
 }
