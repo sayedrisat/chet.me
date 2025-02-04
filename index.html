@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #chatbox {
+            width: 90%;
+            max-width: 400px;
+            height: 400px;
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 10px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>ChatBot AI</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            let userText = document.getElementById("userInput").value;
+            if (userText.trim() === "") return;
+
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<div><b>You:</b> ${userText}</div>`;
+
+            // Simulating bot response
+            setTimeout(() => {
+                chatbox.innerHTML += `<div><b>Bot:</b> This is a test response.</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 1000);
+
+            document.getElementById("userInput").value = "";
+        }
+    </script>
+</body>
+</html>
