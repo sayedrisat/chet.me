@@ -1,21 +1,29 @@
 async function sendMessage() {
-    let userText = document.getElementById("userInput").value;
-    if (userText.trim() === "") return;
+    let userMessage = document.getElementById("userInput").value;
+    if (userMessage.trim() === "") return;
 
-    let chatbox = document.getElementById("chatbox");
-    chatbox.innerHTML += `<div class='message user'><strong>You:</strong> ${userText}</div>`;
-    document.getElementById("userInput").value = "";
+    let chatBox = document.getElementById("chatBox");
+
+    // Display user message
+    chatBox.innerHTML += `<div class="user-message"><strong>You:</strong> ${userMessage}</div>`;
+
+    document.getElementById("userInput").value = ""; // Clear input field
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
 
     try {
         let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userText })
+            body: JSON.stringify({ message: userMessage })
         });
+
         let data = await response.json();
-        chatbox.innerHTML += `<div class='message bot'><strong>Bot:</strong> ${data.reply || "Error: No response"}</div>`;
+        let botReply = data.reply || "Sorry, I couldn't generate a response.";
+
+        // Display bot response
+        chatBox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> ${botReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
     } catch (error) {
-        chatbox.innerHTML += `<div class='message bot error'><strong>Bot:</strong> Failed to fetch response.</div>`;
+        chatBox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> Error connecting to AI.</div>`;
     }
-    chatbox.scrollTop = chatbox.scrollHeight;
 }
