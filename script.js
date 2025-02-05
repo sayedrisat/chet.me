@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     renderChat(); // Load previous messages
 
-    sendButton.addEventListener("click", function () {
+    function sendMessage() {
         const userMessage = userInput.value.trim();
         if (userMessage === "") return;
 
@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
         renderChat();
 
+        // Send the message to Make.com Webhook
         fetch("https://hook.eu2.make.com/your-webhook-url", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -49,6 +50,16 @@ document.addEventListener("DOMContentLoaded", function () {
             renderChat();
         });
 
-        userInput.value = "";
+        userInput.value = ""; // Clear input field
+    }
+
+    // **Fix: Ensure both click and enter key trigger message sending**
+    sendButton.addEventListener("click", sendMessage);
+
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
     });
 });
