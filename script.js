@@ -1,90 +1,54 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
 
-.chat-container {
-    width: 350px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
+    // Load chat history from localStorage
+    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
-.chat-header {
-    background: #222;
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    font-size: 18px;
-}
+    function renderChat() {
+        chatBox.innerHTML = "";
+        chatHistory.forEach(msg => {
+            let messageElement = document.createElement("div");
+            messageElement.classList.add("message", msg.sender === "You" ? "user-message" : "bot-message");
+            messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text}`;
+            chatBox.appendChild(messageElement);
+        });
 
-.chat-logo {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-}
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-.chat-box {
-    height: 400px;
-    overflow-y: auto;
-    padding: 10px;
-    background: #fafafa;
-    display: flex;
-    flex-direction: column;
-}
+    renderChat(); // Load previous messages
 
-.message {
-    padding: 8px 12px;
-    margin: 5px;
-    border-radius: 10px;
-    max-width: 75%;
-    word-wrap: break-word;
-}
+    sendButton.addEventListener("click", function () {
+        const userMessage = userInput.value.trim();
+        if (userMessage === "") return;
 
-.user-message {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
-}
+        chatHistory.push({ sender: "You", text: userMessage });
+        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+        renderChat();
 
-.bot-message {
-    background: #e0e0e0;
-    align-self: flex-start;
-}
+        fetch("https://hook.eu2.make.com/your-webhook-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.reply) {
+                chatHistory.push({ sender: "Bot", text: data.reply });
+                localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+                renderChat();
+            } else {
+                chatHistory.push({ sender: "Bot", text: "Error: No response from AI" });
+                renderChat();
+            }
+        })
+        .catch(error => {
+            chatHistory.push({ sender: "Bot", text: "Error connecting to AI. Try again." });
+            renderChat();
+        });
 
-.chat-input {
-    display: flex;
-    border-top: 1px solid #ddd;
-    padding: 10px;
-}
-
-input {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-    outline: none;
-}
-
-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    margin-left: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
-}
+        userInput.value = "";
+    });
+});
