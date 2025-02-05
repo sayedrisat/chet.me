@@ -3,40 +3,68 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    sendButton.addEventListener("click", sendMessage);
-    userInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    });
-
     function sendMessage() {
-        let userMessage = userInput.value.trim();
-        if (userMessage === "") return;
+        let userText = userInput.value.trim();
+        if (userText === "") return;
 
-        // Display user message in chatbox
-        chatbox.innerHTML += `<div class="message user"><b>You:</b> ${userMessage}</div>`;
+        // Append user message to chatbox
+        appendMessage("You", userText, true);
         userInput.value = "";
-        chatbox.scrollTop = chatbox.scrollHeight;
+        userInput.focus(); // Keeps input field active
 
-        // Send message to webhook
         fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userMessage })
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userText })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to get response from AI.");
+            return response.json();
+        })
         .then(data => {
-            if (data.reply) {
-                chatbox.innerHTML += `<div class="message bot"><b>Bot:</b> ${data.reply}</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
+            console.log("Webhook Response:", data); // Debugging log
+            if (data && data.reply) {
+                appendMessage("Bot", data.reply, false);
             } else {
-                chatbox.innerHTML += `<div class="message bot error"><b>Bot:</b> Error connecting to AI. Try again.</div>`;
+                appendMessage("Bot", "Error: No valid response from AI.", false);
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            chatbox.innerHTML += `<div class="message bot error"><b>Bot:</b> Error connecting to AI. Try again.</div>`;
+            appendMessage("Bot", "Error connecting to AI.", false);
         });
     }
+
+    function appendMessage(sender, text, isUser) {
+        let messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.classList.add(isUser ? "user-message" : "bot-message");
+
+        let senderElement = document.createElement("strong");
+        senderElement.textContent = sender + ": ";
+        messageElement.appendChild(senderElement);
+
+        let textElement = document.createElement("span");
+        textElement.textContent = text;
+        messageElement.appendChild(textElement);
+
+        chatbox.appendChild(messageElement);
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // **Fix for Send Button Click Not Working on Mobile**
+    sendButton.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevents form submission issues
+        sendMessage();
+    });
+
+    // **Fix for Enter Key Not Sending Messages**
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter" || event.keyCode === 13) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
 });
