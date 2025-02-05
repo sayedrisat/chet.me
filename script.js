@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function addMessageToChat(sender, message) {
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
-        messageDiv.classList.add(sender === "User" ? "user-message" : "bot-message");
+        messageDiv.classList.add(sender === "You" ? "user-message" : "bot-message");
         messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
         chatBox.appendChild(messageDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -46,7 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.reply) {
+            console.log("Webhook Response:", data); // Debugging
+
+            if (data && data.reply) {
                 addMessageToChat("Bot", data.reply);
             } else {
                 addMessageToChat("Bot", "Error: No response from AI.");
