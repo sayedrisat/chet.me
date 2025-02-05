@@ -3,76 +3,61 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    // Load previous chat history from local storage
-    function loadChatHistory() {
-        const chatHistory = localStorage.getItem("chatHistory");
-        if (chatHistory) {
-            chatBox.innerHTML = chatHistory;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    }
+    // Load chat history from localStorage
+    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
-    // Save chat history in local storage
-    function saveChatHistory() {
-        localStorage.setItem("chatHistory", chatBox.innerHTML);
-    }
+    function renderChat() {
+        chatBox.innerHTML = "";
+        chatHistory.forEach(msg => {
+            let messageElement = document.createElement("div");
+            messageElement.classList.add("message");
 
-    // Function to add messages to the chat
-    function addMessageToChat(sender, message) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message");
-        messageDiv.classList.add(sender === "You" ? "user-message" : "bot-message");
-        messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-        chatBox.appendChild(messageDiv);
+            if (msg.sender === "You") {
+                messageElement.classList.add("user-message");
+            } else {
+                messageElement.classList.add("bot-message");
+            }
+
+            messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text}`;
+            chatBox.appendChild(messageElement);
+        });
+
         chatBox.scrollTop = chatBox.scrollHeight;
-        saveChatHistory();
     }
 
-    // Function to send user input to webhook
-    function sendMessage() {
+    renderChat(); // Display previous chat messages
+
+    sendButton.addEventListener("click", function () {
         const userMessage = userInput.value.trim();
-        if (!userMessage) return;
+        if (userMessage === "") return;
 
-        // Display user message in chat
-        addMessageToChat("You", userMessage);
+        // Add user message to chat
+        chatHistory.push({ sender: "You", text: userMessage });
+        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+        renderChat();
 
-        // Send message to webhook
+        // Send message to backend webhook
         fetch("https://hook.eu2.make.com/your-webhook-url", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage })
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Webhook Response:", data); // Debugging
-
-            if (data && data.reply) {
-                addMessageToChat("Bot", data.reply);
+            if (data.reply) {
+                chatHistory.push({ sender: "Bot", text: data.reply });
+                localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+                renderChat();
             } else {
-                addMessageToChat("Bot", "Error: No response from AI.");
+                chatHistory.push({ sender: "Bot", text: "Error: No response from AI" });
+                renderChat();
             }
         })
         .catch(error => {
-            addMessageToChat("Bot", "Error connecting to AI. Try again.");
-            console.error("Error:", error);
+            chatHistory.push({ sender: "Bot", text: "Error connecting to AI. Try again." });
+            renderChat();
         });
 
-        // Clear input field
-        userInput.value = "";
-    }
-
-    // Event Listener for Send Button
-    sendButton.addEventListener("click", sendMessage);
-
-    // Event Listener for Enter Key Press
-    userInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
+        userInput.value = ""; // Clear input box
     });
-
-    // Load previous chat history on page load
-    loadChatHistory();
 });
