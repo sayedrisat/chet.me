@@ -1,50 +1,42 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const sendButton = document.getElementById("sendButton");
+    const chatbox = document.getElementById("chatbox");
     const userInput = document.getElementById("userInput");
-    const chatBox = document.getElementById("chatBox");
+    const sendButton = document.getElementById("sendButton");
 
-    function addMessage(sender, message) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message");
-        messageDiv.innerHTML = `<b>${sender}:</b> ${message}`;
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
-    }
-
-    sendButton.addEventListener("click", function () {
-        let userMessage = userInput.value.trim();
-
-        if (userMessage === "") {
-            alert("⚠️ Please enter a message before sending.");
-            return;
+    sendButton.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            sendMessage();
         }
+    });
 
-        addMessage("You", userMessage);
-        userInput.value = ""; // Clear input box
+    function sendMessage() {
+        let userMessage = userInput.value.trim();
+        if (userMessage === "") return;
 
-        fetch("https://hook.eu2.make.com/your-webhook-url", {
+        // Display user message in chatbox
+        chatbox.innerHTML += `<div class="message user"><b>You:</b> ${userMessage}</div>`;
+        userInput.value = "";
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Send message to webhook
+        fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userMessage }),
+            body: JSON.stringify({ message: userMessage })
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Webhook Response:", data);
             if (data.reply) {
-                addMessage("Bot", data.reply);
+                chatbox.innerHTML += `<div class="message bot"><b>Bot:</b> ${data.reply}</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
             } else {
-                addMessage("Bot", "No response from AI.");
+                chatbox.innerHTML += `<div class="message bot error"><b>Bot:</b> Error connecting to AI. Try again.</div>`;
             }
         })
         .catch(error => {
-            console.error("Fetch error:", error);
-            addMessage("Bot", "Error connecting to AI.");
+            console.error("Error:", error);
+            chatbox.innerHTML += `<div class="message bot error"><b>Bot:</b> Error connecting to AI. Try again.</div>`;
         });
-    });
-
-    userInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            sendButton.click();
-        }
-    });
+    }
 });
