@@ -9,16 +9,15 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <img src="logo.png" alt="Chat.Me AI Logo" class="logo">
-            <span>Chat.Me AI</span>
+            <img src="chat-logo.png" alt="Chat Logo" class="chat-logo">
+            <h1>Chat.Me AI</h1>
         </div>
-        <div id="chatbox" class="chatbox"></div>
+        <div class="chat-box" id="chatBox"></div>
         <div class="chat-input">
-            <input type="text" id="userInput" placeholder="Type a message..." autofocus>
+            <input type="text" id="userInput" placeholder="Type a message..." maxlength="500">
             <button id="sendButton">Send</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
