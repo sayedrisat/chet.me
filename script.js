@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
 
-    // Load chat history from localStorage
+    // Load previous messages from localStorage
     let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
     function renderChat() {
@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const userMessage = userInput.value.trim();
         if (userMessage === "") return;
 
+        // Disable send button to prevent duplicate messages
+        sendButton.disabled = true;
+        sendButton.innerText = "Sending...";
+
         chatHistory.push({ sender: "You", text: userMessage });
         localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
         renderChat();
@@ -36,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(data => {
+            sendButton.disabled = false;
+            sendButton.innerText = "Send";
+
             if (data.reply) {
                 chatHistory.push({ sender: "Bot", text: data.reply });
                 localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
@@ -46,6 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
         .catch(error => {
+            sendButton.disabled = false;
+            sendButton.innerText = "Send";
+
             chatHistory.push({ sender: "Bot", text: "Error connecting to AI. Try again." });
             renderChat();
         });
@@ -53,9 +63,10 @@ document.addEventListener("DOMContentLoaded", function () {
         userInput.value = ""; // Clear input field
     }
 
-    // **Fix: Ensure both click and enter key trigger message sending**
+    // **Fix: Ensure button click works**
     sendButton.addEventListener("click", sendMessage);
 
+    // **Fix: Ensure "Enter" key works**
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             event.preventDefault();
