@@ -36,7 +36,7 @@ body {
 /* Chatbox Improvements */
 .chat-container {
     width: 90%;
-    max-width: 500px;
+    max-width: 450px;
     background: white;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -55,13 +55,13 @@ body {
 }
 
 .logo {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
 }
 
 .chat-box {
     padding: 15px;
-    height: 450px;
+    height: 400px;
     overflow-y: auto;
     background: #ffffff;
     display: flex;
@@ -80,14 +80,6 @@ body {
     background: #ccc;
     border-radius: 50%;
     animation: blink 1.5s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-    animation-delay: 0.4s;
 }
 
 @keyframes blink {
@@ -109,9 +101,9 @@ body {
     gap: 10px;
 }
 
-.bot-logo {
-    width: 30px;
-    height: 30px;
+.bot-avatar {
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
 }
 
@@ -121,4 +113,34 @@ body {
     color: white;
     padding: 10px;
     border-radius: 8px;
-    margin: 5px 
+    margin: 5px 0;
+    max-width: 80%;
+    align-self: flex-end;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.chat-input button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: #0056b3;
+}
