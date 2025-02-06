@@ -12,6 +12,7 @@ body {
 /* Popup Notification */
 .popup {
     position: fixed;
+    left: 20px;
     top: 20px;
     background: #007bff;
     color: white;
@@ -21,7 +22,6 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    display: block;
 }
 
 .popup button {
@@ -35,7 +35,7 @@ body {
 
 /* Chatbox Improvements */
 .chat-container {
-    width: 100%;
+    width: 90%;
     max-width: 500px;
     background: white;
     border-radius: 10px;
@@ -61,7 +61,7 @@ body {
 
 .chat-box {
     padding: 15px;
-    height: 500px;
+    height: 450px;
     overflow-y: auto;
     background: #ffffff;
     display: flex;
@@ -121,30 +121,4 @@ body {
     color: white;
     padding: 10px;
     border-radius: 8px;
-    margin: 5px 0;
-    max-width: 80%;
-    align-self: flex-end;
-}
-
-.chat-input {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-}
-
-.chat-input input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-}
-
-.chat-input button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-left: 5px;
-    cursor: pointer;
-}
+    margin: 5px 
