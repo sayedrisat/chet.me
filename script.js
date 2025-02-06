@@ -49,11 +49,16 @@ async function sendMessage() {
             throw new Error(`HTTP Error: ${response.status}`);
         }
 
-        let data = await response.json();
-        
-        // Debugging: Log API response to check structure
-        console.log("API Response:", data);
-        
+        let textResponse = await response.text(); // Read raw response first
+        console.log("Raw API Response:", textResponse);
+
+        let data;
+        try {
+            data = JSON.parse(textResponse); // Try parsing JSON safely
+        } catch (jsonError) {
+            throw new Error("Invalid JSON received from API");
+        }
+
         let botReply = data.reply || "Sorry, I couldn't generate a response.";
 
         // Remove typing indicator before showing response
