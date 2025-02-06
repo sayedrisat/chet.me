@@ -1,3 +1,13 @@
+document.getElementById("userInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+function closePopup() {
+    document.getElementById("telegramPopup").style.display = "none";
+}
+
 async function sendMessage() {
     let userMessage = document.getElementById("userInput").value;
     if (userMessage.trim() === "") return;
@@ -10,6 +20,13 @@ async function sendMessage() {
     document.getElementById("userInput").value = ""; // Clear input field
     chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
 
+    // Show typing animation
+    let typingIndicator = document.createElement("div");
+    typingIndicator.className = "typing-indicator";
+    typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
+    chatBox.appendChild(typingIndicator);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
     try {
         let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
@@ -20,10 +37,17 @@ async function sendMessage() {
         let data = await response.json();
         let botReply = data.reply || "Sorry, I couldn't generate a response.";
 
-        // Display bot response
-        chatBox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> ${botReply}</div>`;
+        // Remove typing indicator
+        chatBox.removeChild(typingIndicator);
+
+        // Display bot response with profile logo
+        chatBox.innerHTML += `<div class="bot-message">
+            <img src="bot-logo.png" class="bot-logo">
+            <strong>Bot:</strong> ${botReply}
+        </div>`;
         chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
     } catch (error) {
+        chatBox.removeChild(typingIndicator);
         chatBox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> Error connecting to AI.</div>`;
     }
 }
