@@ -41,36 +41,34 @@ async function sendMessage() {
     try {
         let response = await fetch("https://hook.eu2.make.com/58hy2sz57de23mg65laummt11gd5aje4", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({ message: userMessage })
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        let textResponse = await response.text(); // Read raw response first
-        console.log("Raw API Response:", textResponse);
-
-        let data;
-        try {
-            data = JSON.parse(textResponse); // Try parsing JSON safely
-        } catch (jsonError) {
-            throw new Error("Invalid JSON received from API");
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const text = await response.text();
+            throw new Error(`Invalid content type: ${contentType}. Response: ${text}`);
         }
 
+        let data = await response.json();
+        console.log("API Response:", data);
+        
         let botReply = data.reply || "Sorry, I couldn't generate a response.";
 
-        // Remove typing indicator before showing response
         chatBox.removeChild(typingIndicator);
 
-        // Show bot response
         let botMsgDiv = document.createElement("div");
         botMsgDiv.className = "bot-message";
         botMsgDiv.innerHTML = `<img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply}`;
         chatBox.appendChild(botMsgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
-
     } catch (error) {
         console.error("Error connecting to AI:", error);
         chatBox.removeChild(typingIndicator);
