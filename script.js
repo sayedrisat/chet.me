@@ -21,7 +21,7 @@ async function sendMessage() {
     if (userMessage === "") return;
 
     let chatBox = document.getElementById("chatBox");
-    
+
     // Show user message
     let userMsgDiv = document.createElement("div");
     userMsgDiv.className = "user-message";
@@ -48,7 +48,7 @@ async function sendMessage() {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         let contentType = response.headers.get("content-type");
@@ -57,17 +57,18 @@ async function sendMessage() {
         if (contentType && contentType.includes("application/json")) {
             data = await response.json();
         } else {
-            data = await response.text();
-            console.warn("Response is not JSON, received text:", data);
+            let textResponse = await response.text();
+            console.warn("Response is not JSON, received text:", textResponse);
+
             try {
-                data = JSON.parse(data);
+                data = JSON.parse(textResponse);
             } catch (jsonError) {
                 throw new Error("Invalid JSON format received from API");
             }
         }
 
         console.log("API Response:", data);
-        
+
         let botReply = (typeof data === "object" && data.reply) ? data.reply : "Sorry, I couldn't generate a response.";
 
         chatBox.removeChild(typingIndicator);
