@@ -14,34 +14,9 @@ function closePopup() {
     document.getElementById("popup").style.display = "none";
 }
 
-function saveChatHistory(date, messages) {
-    let history = JSON.parse(localStorage.getItem("chatHistory")) || {};
-    history[date] = messages;
-    localStorage.setItem("chatHistory", JSON.stringify(history));
-}
-
-function loadChatHistory(date) {
-    let history = JSON.parse(localStorage.getItem("chatHistory")) || {};
-    return history[date] || [];
-}
-
-function displayChatHistory(date) {
-    let chatBox = document.getElementById("chatBox");
-    chatBox.innerHTML = "";
-    let messages = loadChatHistory(date);
-    messages.forEach(msg => {
-        let msgDiv = document.createElement("div");
-        msgDiv.className = msg.type;
-        msgDiv.innerHTML = msg.content;
-        chatBox.appendChild(msgDiv);
-    });
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
 async function sendMessage() {
     let userInput = document.getElementById("userInput");
     let userMessage = userInput.value.trim();
-    let date = new Date().toISOString().split("T")[0];
 
     if (userMessage === "") return;
 
@@ -50,12 +25,8 @@ async function sendMessage() {
     // Show user message
     let userMsgDiv = document.createElement("div");
     userMsgDiv.className = "user-message";
-    userMsgDiv.innerHTML = `<strong>You:</strong> ${userMessage}`;
+    userMsgDiv.innerHTML = <strong>You:</strong> ${userMessage};
     chatBox.appendChild(userMsgDiv);
-
-    let chatHistory = loadChatHistory(date);
-    chatHistory.push({ type: "user-message", content: `<strong>You:</strong> ${userMessage}` });
-    saveChatHistory(date, chatHistory);
 
     userInput.value = "";
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -63,7 +34,7 @@ async function sendMessage() {
     // Show typing animation
     let typingIndicator = document.createElement("div");
     typingIndicator.className = "typing-indicator";
-    typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
+    typingIndicator.innerHTML = <span></span><span></span><span></span>;
     chatBox.appendChild(typingIndicator);
     chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -77,7 +48,7 @@ async function sendMessage() {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(HTTP error! Status: ${response.status});
         }
 
         let textResponse = await response.text();
@@ -103,16 +74,12 @@ async function sendMessage() {
 
         let botMsgDiv = document.createElement("div");
         botMsgDiv.className = "bot-message";
-        botMsgDiv.innerHTML = `<img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply}`;
+        botMsgDiv.innerHTML = <img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply};
         chatBox.appendChild(botMsgDiv);
-
-        chatHistory.push({ type: "bot-message", content: `<img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply}` });
-        saveChatHistory(date, chatHistory);
-
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
         console.error("Error connecting to AI:", error);
         chatBox.removeChild(typingIndicator);
-        chatBox.innerHTML += `<div class="bot-message"><img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> Connection error. Try again later.</div>`;
+        chatBox.innerHTML += <div class="bot-message"><img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> Connection error. Try again later.</div>;
     }
 }
