@@ -51,16 +51,20 @@ async function sendMessage() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            const text = await response.text();
-            throw new Error(`Invalid content type: ${contentType}. Response: ${text}`);
+        let contentType = response.headers.get("content-type");
+        let data;
+
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            data = await response.text();
+            console.warn("Response is not JSON, received text:", data);
+            throw new Error("Invalid content type received from API");
         }
 
-        let data = await response.json();
         console.log("API Response:", data);
         
-        let botReply = data.reply || "Sorry, I couldn't generate a response.";
+        let botReply = (typeof data === "object" && data.reply) ? data.reply : "Sorry, I couldn't generate a response.";
 
         chatBox.removeChild(typingIndicator);
 
