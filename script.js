@@ -59,7 +59,11 @@ async function sendMessage() {
         } else {
             data = await response.text();
             console.warn("Response is not JSON, received text:", data);
-            throw new Error("Invalid content type received from API");
+            try {
+                data = JSON.parse(data);
+            } catch (jsonError) {
+                throw new Error("Invalid JSON format received from API");
+            }
         }
 
         console.log("API Response:", data);
