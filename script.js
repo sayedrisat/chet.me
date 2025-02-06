@@ -39,4 +39,6 @@ async function sendMessage() {
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
         chatBox.removeChild(typingIndicator);
-        chatBox.innerHTML += `<
+        chatBox.innerHTML += `<div class="bot-message"><img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> Error connecting to AI.</div>`;
+    }
+}
