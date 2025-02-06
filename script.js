@@ -21,7 +21,7 @@ async function sendMessage() {
     if (userMessage === "") return;
 
     let chatBox = document.getElementById("chatBox");
-
+    
     // Show user message
     let userMsgDiv = document.createElement("div");
     userMsgDiv.className = "user-message";
@@ -51,24 +51,23 @@ async function sendMessage() {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        let contentType = response.headers.get("content-type");
+        let textResponse = await response.text();
         let data;
 
-        if (contentType && contentType.includes("application/json")) {
-            data = await response.json();
-        } else {
-            let textResponse = await response.text();
-            console.warn("Response is not JSON, received text:", textResponse);
-
+        try {
+            data = JSON.parse(textResponse);
+        } catch (jsonError) {
+            console.warn("Response is not JSON, attempting manual conversion:", textResponse);
+            textResponse = textResponse.replace(/\n/g, " ").replace(/\t/g, " ").trim(); // Clean text
             try {
                 data = JSON.parse(textResponse);
-            } catch (jsonError) {
-                throw new Error("Invalid JSON format received from API");
+            } catch (finalError) {
+                throw new Error("Final attempt failed: Invalid JSON format received from API");
             }
         }
 
-        console.log("API Response:", data);
-
+        console.log("API Response (Parsed):", data);
+        
         let botReply = (typeof data === "object" && data.reply) ? data.reply : "Sorry, I couldn't generate a response.";
 
         chatBox.removeChild(typingIndicator);
