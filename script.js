@@ -5,7 +5,7 @@ document.getElementById("userInput").addEventListener("keypress", function(event
 });
 
 function closePopup() {
-    document.getElementById("telegramPopup").style.display = "none";
+    document.getElementById("popup").style.display = "none";
 }
 
 async function sendMessage() {
@@ -13,14 +13,11 @@ async function sendMessage() {
     if (userMessage.trim() === "") return;
 
     let chatBox = document.getElementById("chatBox");
-
-    // Display user message
     chatBox.innerHTML += `<div class="user-message"><strong>You:</strong> ${userMessage}</div>`;
 
-    document.getElementById("userInput").value = ""; // Clear input field
-    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+    document.getElementById("userInput").value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Show typing animation
     let typingIndicator = document.createElement("div");
     typingIndicator.className = "typing-indicator";
     typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
@@ -37,17 +34,9 @@ async function sendMessage() {
         let data = await response.json();
         let botReply = data.reply || "Sorry, I couldn't generate a response.";
 
-        // Remove typing indicator
         chatBox.removeChild(typingIndicator);
-
-        // Display bot response with profile logo
-        chatBox.innerHTML += `<div class="bot-message">
-            <img src="bot-logo.png" class="bot-logo">
-            <strong>Bot:</strong> ${botReply}
-        </div>`;
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+        chatBox.innerHTML += `<div class="bot-message"><img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
         chatBox.removeChild(typingIndicator);
-        chatBox.innerHTML += `<div class="bot-message"><strong>Bot:</strong> Error connecting to AI.</div>`;
-    }
-}
+        chatBox.innerHTML += `<
