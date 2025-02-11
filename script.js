@@ -4,12 +4,6 @@ document.getElementById("userInput").addEventListener("keypress", function(event
     }
 });
 
-function handleKeyPress(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-}
-
 function closePopup() {
     document.getElementById("popup").style.display = "none";
 }
@@ -25,7 +19,7 @@ async function sendMessage() {
     // Show user message
     let userMsgDiv = document.createElement("div");
     userMsgDiv.className = "user-message";
-    userMsgDiv.innerHTML = <strong>You:</strong> ${userMessage};
+    userMsgDiv.innerHTML = `<strong>You:</strong> ${userMessage}`;
     chatBox.appendChild(userMsgDiv);
 
     userInput.value = "";
@@ -34,7 +28,7 @@ async function sendMessage() {
     // Show typing animation
     let typingIndicator = document.createElement("div");
     typingIndicator.className = "typing-indicator";
-    typingIndicator.innerHTML = <span></span><span></span><span></span>;
+    typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
     chatBox.appendChild(typingIndicator);
     chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -48,7 +42,7 @@ async function sendMessage() {
         });
 
         if (!response.ok) {
-            throw new Error(HTTP error! Status: ${response.status});
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         let textResponse = await response.text();
@@ -74,12 +68,15 @@ async function sendMessage() {
 
         let botMsgDiv = document.createElement("div");
         botMsgDiv.className = "bot-message";
-        botMsgDiv.innerHTML = <img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply};
+        botMsgDiv.innerHTML = `<img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> ${botReply}`;
         chatBox.appendChild(botMsgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
         console.error("Error connecting to AI:", error);
         chatBox.removeChild(typingIndicator);
-        chatBox.innerHTML += <div class="bot-message"><img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> Connection error. Try again later.</div>;
+        let errorMsgDiv = document.createElement("div");
+        errorMsgDiv.className = "bot-message";
+        errorMsgDiv.innerHTML = `<img src="logo.png" class="bot-avatar"> <strong>Bot:</strong> Connection error. Try again later.`;
+        chatBox.appendChild(errorMsgDiv);
     }
 }
